@@ -34,14 +34,46 @@ function play:change_volume(level)
 	end
 end
 
-function check_for_loop(object)
+function loop_object(object, window_width, window_height)
 	local object_points = {object.b:getWorldPoints(object.s:getPoints())}
-	local within_window = true
-	for i = 1, #object_points / 2 do
-		if within_window then
-			-- do the thing here
+	local outside_window_x = true
+	local outside_window_y = true
+
+	for i = 1, #object_points / 2, 2 do
+		if object_points[i] > 0 and object_points[i] < window_width then
+			outside_window_x = false
+		end
+		if object_points[i + 1] > 0 and object_points[i + 1] < window_height then
+			outside_window_y = false
 		end
 	end
+
+	if outside_window_x then
+		local distance = 0
+		if object.b:getX() > window_width then
+			distance = object.b:getX() - window_width
+		else
+			distance = math.abs(object.b:getX())
+		end
+
+		print(distance)
+
+		object.b:setX(object.b:getX() % (window_width + distance))
+	end
+	if outside_window_y then
+		local distance = 0
+		if object.b:getY() > window_height then
+			distance = object.b:getY() - window_height
+		else
+			distance = math.abs(object.b:getY())
+		end
+
+		print(distance)
+
+		object.b:setY(object.b:getY() % (window_height + distance))
+	end
+
+	return object
 end
 
 function play:entered()
@@ -101,18 +133,18 @@ function play:update(dt)
 		local asteroid_distance_to_player = ((self.player.b:getX() - x)^2 + (self.player.b:getY() - y)^2)^0.5
 
 		if asteroid_distance_to_player > 200 then
-			size = love.math.random(30, 50)
+			size = love.math.random(50, 60)
 			--speed = love.math.random(50, 300),
 
 			local asteroid_vertices = {}
 
-			vertices_amount = math.ceil(love.math.random(10, 15) / 2)
+			vertices_amount = math.ceil(love.math.random(10, 16) / 2)
 			for i = 1, vertices_amount do
 				local temp_vertice_x = math.floor(size * math.cos(math.rad(365 / vertices_amount * i)))
 				local temp_vertice_y = math.floor(size * math.sin(math.rad(365 / vertices_amount * i)))
 
-				local vertice_x = love.math.random(temp_vertice_x - 10, temp_vertice_x + 10)
-				local vertice_y = love.math.random(temp_vertice_y - 10, temp_vertice_y + 10)
+				local vertice_x = love.math.random(temp_vertice_x - 15, temp_vertice_x + 15)
+				local vertice_y = love.math.random(temp_vertice_y - 15, temp_vertice_y + 15)
 
 				table.insert(asteroid_vertices, vertice_x)
 				table.insert(asteroid_vertices, vertice_y)
@@ -132,6 +164,12 @@ function play:update(dt)
 			table.insert(self.asteroids, asteroid)
 		end
 	end --me
+
+	self.player = loop_object(self.player, window_width, window_height)
+
+	for i, asteroid in ipairs(self.asteroids) do
+		asteroid = loop_object(asteroid, window_width, window_height)
+	end
 
 	-- Apply ball movement
 --[[	for k, ball in pairs(self.balls) do
