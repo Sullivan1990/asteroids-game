@@ -1,0 +1,1 @@
+This is pretty much just what it says on the tin. It is an Asteroids clone I am working on as a personal project/tafe project (idk). My end goal is to make it multiplayer pvp, but I would be happy with just a working asteroids-esque thing.
