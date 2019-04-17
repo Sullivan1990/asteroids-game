@@ -11,7 +11,7 @@ local play = {
 		default = gr.getFont(),
 		laser = gr.newImage("laser.png"),
 		-- Add sounds effects later
-		spawn = love.audio.newSource("spawn.wav", "static"),
+		--spawn = love.audio.newSource("spawn.wav", "static"),
 --		died = love.audio.newSource("died.wav", "static"),
 --		ball = love.audio.newSource("ball.wav", "static")
 	},
@@ -19,11 +19,12 @@ local play = {
 	asteroid_speed = 10,
 	asteroid_spin = 10,
 	player = {
-		speed = 10
+		speed = 10,
+		size = 10
 	},
 	world = ph.newWorld(0, 0, true),
 	difficulty = 2,
-	volume = 1.0,
+	volume = 0.0,
 	game_time = 0,
 	score = 0
 }
@@ -34,7 +35,8 @@ function play:change_volume(level)
 	end
 end
 
-function loop_object(object, window_width, window_height)
+function loop_object(object)
+	local window_width, window_height = gr.getDimensions()
 	local object_points = {object.b:getWorldPoints(object.s:getPoints())}
 	local outside_window_x = true
 	local outside_window_y = true
@@ -49,28 +51,18 @@ function loop_object(object, window_width, window_height)
 	end
 
 	if outside_window_x then
-		local distance = 0
 		if object.b:getX() > window_width then
-			distance = object.b:getX() - window_width
+			object.b:setX(object.b:getX() - (window_width + object.size * 2))
 		else
-			distance = math.abs(object.b:getX())
+			object.b:setX(object.b:getX() + (window_width + object.size * 2))
 		end
-
-		print(distance)
-
-		object.b:setX(object.b:getX() % (window_width + distance))
 	end
 	if outside_window_y then
-		local distance = 0
 		if object.b:getY() > window_height then
-			distance = object.b:getY() - window_height
+			object.b:setY(object.b:getY() - (window_height + object.size * 2))
 		else
-			distance = math.abs(object.b:getY())
+			object.b:setY(object.b:getY() + (window_height + object.size * 2))
 		end
-
-		print(distance)
-
-		object.b:setY(object.b:getY() % (window_height + distance))
 	end
 
 	return object
@@ -98,7 +90,7 @@ function play:entered()
 	self.score = 0;
 
 	love.audio.setVolume(self.volume)
-	self.assets.spawn:play()
+	--self.assets.spawn:play()
 end
 
 function play:update(dt)
@@ -133,12 +125,12 @@ function play:update(dt)
 		local asteroid_distance_to_player = ((self.player.b:getX() - x)^2 + (self.player.b:getY() - y)^2)^0.5
 
 		if asteroid_distance_to_player > 200 then
-			size = love.math.random(50, 60)
+			local size = love.math.random(50, 60)
 			--speed = love.math.random(50, 300),
 
 			local asteroid_vertices = {}
 
-			vertices_amount = math.ceil(love.math.random(10, 16) / 2)
+			local vertices_amount = math.ceil(love.math.random(10, 16) / 2)
 			for i = 1, vertices_amount do
 				local temp_vertice_x = math.floor(size * math.cos(math.rad(365 / vertices_amount * i)))
 				local temp_vertice_y = math.floor(size * math.sin(math.rad(365 / vertices_amount * i)))
@@ -154,6 +146,8 @@ function play:update(dt)
 			asteroid.b = ph.newBody(self.world, 0, 0, "dynamic")
 			asteroid.s = ph.newPolygonShape(asteroid_vertices)
 			asteroid.f = ph.newFixture(asteroid.b, asteroid.s)
+			asteroid.size = size
+
 			asteroid.f:setCategory(2)
 			asteroid.f:setMask(2)
 
