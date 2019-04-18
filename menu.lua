@@ -21,9 +21,14 @@ local menu = {
 }
 
 function menu:entered()
+	local window_width, window_height = love.graphics.getDimensions()
+	local window_width_center, window_height_center = window_width / 2, window_height / 2
 	-- reset to first when entered
 	
 	self.selected_item = 1
+	love.mouse.setGrabbed(true)
+	love.mouse.setPosition(window_width_center, window_height_center)
+	love.mouse.setVisible(false)
 end
 
 function menu:draw()
@@ -53,6 +58,8 @@ function menu:draw()
 	end
 
 	lg.setFont(self.assets.defaultFont)
+
+	lg.circle("fill", love.mouse.getX(), love.mouse.getY(), 4, 4)
 end
 
 function menu:keypressed(key)

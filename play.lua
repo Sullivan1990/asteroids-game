@@ -1,5 +1,6 @@
 gr = love.graphics
 ph = love.physics
+ms = love.mouse
 
 function makeColours(r, g, b)
 	return r / 255, g / 255, b / 255
@@ -91,6 +92,14 @@ function play:entered()
 
 	love.audio.setVolume(self.volume)
 	--self.assets.spawn:play()
+	
+	love.mouse.setVisible(true)
+end
+
+function play:mousepressed(x, y, button)
+	if button == 1 then
+		--print("pew pew!")
+	end
 end
 
 function play:update(dt)
@@ -99,19 +108,30 @@ function play:update(dt)
 	-- Update game score timer
 	self.game_time = self.game_time + dt
 
+
 	-- Apply player movement
-	if love.keyboard.isDown("w", "up") then
-		self.player.b:applyForce(0, -self.player.speed)
+	--  find angle from player to cursor
+	if ms.getY() ~= self.player.b:getY() and ms.getX() ~= self.player.b:getX() then -- protect against divide-by-zeros
+		local mouse_angle = math.atan2((ms.getY() - self.player.b:getY()), (ms.getX() - self.player.b:getX()))
+		self.player.b:setAngle(mouse_angle)
+		self.player.b:setAngularVelocity(0)
+		-- come back to this, and try cheese's idea of converting this to relative movement for use with the vector method
+
+		--  find vector from object to mouse position
+		--local vector_angle = mouse_angle - self.player.b:getAngle()
+
+		--  set angle to a fraction of the vector
+		--self.player.b:setAngle(self.player.b:getAngle() + (vector_angle * 0.4))
 	end
-	if love.keyboard.isDown("a", "left") then
-		self.player.b:applyForce(-self.player.speed, 0)
+
+	
+	if ms.isDown(2) then
+		local speed_x = self.player.speed * math.cos(self.player.b:getAngle())
+		local speed_y = self.player.speed * math.sin(self.player.b:getAngle())
+
+		self.player.b:applyForce(speed_x, speed_y)
 	end
-	if love.keyboard.isDown("s", "down") then
-		self.player.b:applyForce(0, self.player.speed)
-	end
-	if love.keyboard.isDown("d", "right") then
-		self.player.b:applyForce(self.player.speed, 0)
-	end
+
 	if love.keyboard.isDown("escape") then
 		game:change_state("menu")
 	end
