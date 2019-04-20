@@ -1,7 +1,7 @@
 ph = love.physics
 local asteroid = {}
 
-function asteroid:new(world, x, y, size, speed, spin)
+function asteroid.new(world, x, y, size, speed_x, speed_y, spin)
 	local asteroid_vertices = {}
 
 	local vertices_amount = math.ceil(love.math.random(10, 16) / 2)
@@ -26,10 +26,36 @@ function asteroid:new(world, x, y, size, speed, spin)
 	new_asteroid.f:setMask(2)
 
 	new_asteroid.b:setPosition(x, y)
-	new_asteroid.b:setLinearVelocity(love.math.random(-speed, speed), love.math.random(-speed, speed))
+	new_asteroid.b:setLinearVelocity(speed_x, speed_y)
 	new_asteroid.b:setAngularVelocity(math.rad(love.math.random(-spin, spin)))
 
 	return new_asteroid
+end
+
+function asteroid.split(asteroid)
+	local amount = love.math.random(2, 3)
+
+	local remaining_size = asteroid.size
+	local total_size = 0
+	for i = 1, amount do
+		-- Code to determine size of new asteroid
+		local min_size = math.ceil(asteroid.size / (amount * 1.5))
+		local max_size = math.ceil(remaining_size - (min_size * (amount - i)))
+
+		local size = love.math.random(min_size, max_size)
+
+		remaining_size = remaining_size - size
+		new_size = new_size + size
+
+		-- Find center point of new asteroid within original
+		local angle = math.rad(365 / asteroid.size * (new_size - size / 2))
+		local temp_center_x = math.ceil(asteroid.size / 2 * math.cos(angle))
+		local temp_center_y = math.ceil(asteroid.size / 2 * math.sin(angle))
+
+		local random_area = asteroid.size / 3 * 2
+		local center_x = love.math.random(temp_center_x - random_area, temp_center_x + random_area) + asteroid.b:getX()
+		local center_y = love.math.random(temp_center_y - random_area, temp_center_y + random_area) + asteroid.b:getY()
+	end
 end
 
 return asteroid

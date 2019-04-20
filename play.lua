@@ -114,8 +114,7 @@ function play:update(dt)
 	-- Apply player movement
 	--  find angle from player to cursor
 	if ms.getY() ~= self.player.b:getY() and ms.getX() ~= self.player.b:getX() then -- protect against divide-by-zeros
-		local mouse_angle = math.atan2((ms.getY() - self.player.b:getY()), (ms.getX() - self.player.b:getX()))
-		self.player.b:setAngle(mouse_angle)
+		local mouse_angle = math.atan2((ms.getY() - self.player.b:getY()), (ms.getX() - self.player.b:getX())) self.player.b:setAngle(mouse_angle)
 		self.player.b:setAngularVelocity(0)
 		-- come back to this, and try cheese's idea of converting this to relative movement for use with the vector method
 
@@ -147,10 +146,10 @@ function play:update(dt)
 		local asteroid_distance_to_player = ((self.player.b:getX() - x)^2 + (self.player.b:getY() - y)^2)^0.5
 
 		if asteroid_distance_to_player > 200 then
-			local size = love.math.random(50, 60)
-			--speed = love.math.random(50, 300),
+			local size = love.math.random(60, 80)
+			local speed_x, speed_y = love.math.random(-self.asteroid_speed, self.asteroid_speed), love.math.random(-self.asteroid_speed, self.asteroid_speed)
 
-			table.insert(self.asteroids, asteroid:new(self.world, x, y, size, self.asteroid_speed, self.asteroid_spin))
+			table.insert(self.asteroids, asteroid.new(self.world, x, y, size, speed_x, speed_y, self.asteroid_spin))
 		end
 	end --me
 
