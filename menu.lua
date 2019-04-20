@@ -1,4 +1,5 @@
-lg = love.graphics
+gr = love.graphics
+ms = love.mouse
 
 function makeColours(r, g, b)
 	return r / 255, g / 255, b / 255
@@ -6,9 +7,9 @@ end
 
 local menu = {
 	assets = {
-		titleFont = lg.newFont(40),
-		menuFont = lg.newFont(20),
-		defaultFont = lg.getFont(),
+		titleFont = gr.newFont(40),
+		menuFont = gr.newFont(20),
+		defaultFont = gr.getFont()
 	},
 	items = {
 		"Play",
@@ -26,7 +27,7 @@ function menu:entered()
 	-- reset to first when entered
 	
 	self.selected_item = 1
-	love.mouse.setGrabbed(true)
+	love.mouse.setGrabbed(false)
 	love.mouse.setPosition(window_width_center, window_height_center)
 	love.mouse.setVisible(false)
 end
@@ -41,25 +42,25 @@ function menu:draw()
 	local text_y = window_height_center - self.assets.menuFont:getHeight() / 2
 
 	-- Draw menu
-	lg.setBackgroundColor(makeColours(10, 10, 10))
-	lg.setColor(makeColours(232, 232, 232))
+	gr.setBackgroundColor(makeColours(10, 10, 10))
+	gr.setColor(makeColours(232, 232, 232))
 
-	lg.setFont(self.assets.titleFont)
-	lg.printf("ASTEROIDS", text_x, (text_y - lg.getFont():getHeight() * 1.5), text_width, "center")
+	gr.setFont(self.assets.titleFont)
+	gr.printf("ASTEROIDS", text_x, (text_y - gr.getFont():getHeight() * 1.5), text_width, "center")
 
-	lg.setFont(self.assets.menuFont)
+	gr.setFont(self.assets.menuFont)
 	for i, item in ipairs(self.items) do
-		yPos = text_y + (lg.getFont():getHeight() + lg.getFont():getHeight() / 3) * i
+		yPos = text_y + (gr.getFont():getHeight() + gr.getFont():getHeight() / 3) * i
 		if i == self.selected_item then
-			lg.printf("> " .. item .. " <", text_x, yPos, text_width, "center")
+			gr.printf("> " .. item .. " <", text_x, yPos, text_width, "center")
 		else
-			lg.printf(item, text_x, yPos, text_width, "center")
+			gr.printf(item, text_x, yPos, text_width, "center")
 		end
 	end
 
-	lg.setFont(self.assets.defaultFont)
+	gr.setFont(self.assets.defaultFont)
 
-	lg.circle("fill", love.mouse.getX(), love.mouse.getY(), 4, 4)
+	gr.circle("fill", love.mouse.getX(), love.mouse.getY(), 4, 4)
 end
 
 function menu:keypressed(key)

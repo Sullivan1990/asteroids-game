@@ -86,6 +86,7 @@ function play:entered()
 	self.player.b:setLinearVelocity(0, 0)
 
 	self.asteroids = {}
+	asteroid = require("asteroid")
 	
 	self.game_time = 0;
 	self.score = 0;
@@ -93,7 +94,8 @@ function play:entered()
 	love.audio.setVolume(self.volume)
 	--self.assets.spawn:play()
 	
-	love.mouse.setVisible(true)
+	ms.setVisible(true)
+	ms.setGrabbed(true)
 end
 
 function play:mousepressed(x, y, button)
@@ -148,34 +150,7 @@ function play:update(dt)
 			local size = love.math.random(50, 60)
 			--speed = love.math.random(50, 300),
 
-			local asteroid_vertices = {}
-
-			local vertices_amount = math.ceil(love.math.random(10, 16) / 2)
-			for i = 1, vertices_amount do
-				local temp_vertice_x = math.floor(size * math.cos(math.rad(365 / vertices_amount * i)))
-				local temp_vertice_y = math.floor(size * math.sin(math.rad(365 / vertices_amount * i)))
-
-				local vertice_x = love.math.random(temp_vertice_x - 15, temp_vertice_x + 15)
-				local vertice_y = love.math.random(temp_vertice_y - 15, temp_vertice_y + 15)
-
-				table.insert(asteroid_vertices, vertice_x)
-				table.insert(asteroid_vertices, vertice_y)
-			end
-
-			local asteroid = {}
-			asteroid.b = ph.newBody(self.world, 0, 0, "dynamic")
-			asteroid.s = ph.newPolygonShape(asteroid_vertices)
-			asteroid.f = ph.newFixture(asteroid.b, asteroid.s)
-			asteroid.size = size
-
-			asteroid.f:setCategory(2)
-			asteroid.f:setMask(2)
-
-			asteroid.b:setPosition(x, y)
-			asteroid.b:setLinearVelocity(love.math.random(-self.asteroid_speed, self.asteroid_speed), love.math.random(-self.asteroid_speed, self.asteroid_speed))
-			asteroid.b:setAngularVelocity(math.rad(love.math.random(-self.asteroid_spin, self.asteroid_spin)))
-
-			table.insert(self.asteroids, asteroid)
+			table.insert(self.asteroids, asteroid:new(self.world, x, y, size, self.asteroid_speed, self.asteroid_spin))
 		end
 	end --me
 
