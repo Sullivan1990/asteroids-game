@@ -24,7 +24,7 @@ local play = {
 		size = 10
 	},
 	world = ph.newWorld(0, 0, true),
-	difficulty = 2,
+	difficulty = 0,
 	volume = 0.0,
 	game_time = 0,
 	score = 0
@@ -101,6 +101,7 @@ end
 function play:mousepressed(x, y, button)
 	if button == 1 then
 		--print("pew pew!")
+		asteroid.split(self.asteroids[1], self.world)
 	end
 end
 
@@ -114,7 +115,8 @@ function play:update(dt)
 	-- Apply player movement
 	--  find angle from player to cursor
 	if ms.getY() ~= self.player.b:getY() and ms.getX() ~= self.player.b:getX() then -- protect against divide-by-zeros
-		local mouse_angle = math.atan2((ms.getY() - self.player.b:getY()), (ms.getX() - self.player.b:getX())) self.player.b:setAngle(mouse_angle)
+		local mouse_angle = math.atan2((ms.getY() - self.player.b:getY()), (ms.getX() - self.player.b:getX())) 
+		self.player.b:setAngle(mouse_angle)
 		self.player.b:setAngularVelocity(0)
 		-- come back to this, and try cheese's idea of converting this to relative movement for use with the vector method
 
@@ -138,7 +140,7 @@ function play:update(dt)
 	end
 
 	-- Spawn more asteroids if the time permits
-	asteroids_amount = love.math.random(#self.asteroids, (self.game_time / 8) * self.difficulty + 3)
+	asteroids_amount = love.math.random(#self.asteroids, (self.game_time / 8) * self.difficulty + 1)
 	while #self.asteroids < asteroids_amount do
 		local x = love.math.random(0, window_width)
 		local y = love.math.random(0, window_height)

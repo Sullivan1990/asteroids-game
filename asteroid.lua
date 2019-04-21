@@ -32,29 +32,49 @@ function asteroid.new(world, x, y, size, speed_x, speed_y, spin)
 	return new_asteroid
 end
 
-function asteroid.split(asteroid)
+function asteroid.split(asteroid, world)
 	local amount = love.math.random(2, 3)
 
 	local remaining_size = asteroid.size
-	local total_size = 0
+	local new_size = 0
 	for i = 1, amount do
+		print("Asteroid " .. i .. ":")
 		-- Code to determine size of new asteroid
 		local min_size = math.ceil(asteroid.size / (amount * 1.5))
 		local max_size = math.ceil(remaining_size - (min_size * (amount - i)))
+		print("min: " .. min_size .. " max: " .. max_size)
 
 		local size = love.math.random(min_size, max_size)
+		print("size: " .. size)
 
 		remaining_size = remaining_size - size
+		local previous_size = new_size
 		new_size = new_size + size
+		print()
 
 		-- Find center point of new asteroid within original
-		local angle = math.rad(365 / asteroid.size * (new_size - size / 2))
-		local temp_center_x = math.ceil(asteroid.size / 2 * math.cos(angle))
-		local temp_center_y = math.ceil(asteroid.size / 2 * math.sin(angle))
+		local center_angle = math.rad(365 / asteroid.size * (new_size - size / 2))
+		local temp_center_x = math.ceil(asteroid.size / 2 * math.cos(center_angle))
+		local temp_center_y = math.ceil(asteroid.size / 2 * math.sin(center_angle))
+		print("center angle: " .. math.deg(center_angle) .. "  x: " .. temp_center_x .. " y: " .. temp_center_y)
 
 		local random_area = asteroid.size / 3 * 2
+		print("area: " .. random_area)
 		local center_x = love.math.random(temp_center_x - random_area, temp_center_x + random_area) + asteroid.b:getX()
 		local center_y = love.math.random(temp_center_y - random_area, temp_center_y + random_area) + asteroid.b:getY()
+
+		print()
+		-- Find angle of trajectory
+		local old_velocity_x, old_velocity_y = asteroid.b:getLinearVelocity()
+		local old_angle = math.atan2((0 - old_velocity_y), (0 - old_velocity_x)) 
+		print("old angle: " .. math.deg(old_angle))
+
+		local temp_angle = love.math.random(previous_size, new_size) / asteroid.size * 67.5
+		local angle = (old_angle + 67.5 / 2) - (previous_size / asteroid.size * 67.5 + temp_angle)
+		print("temp angle: " .. math.deg(temp_angle) .. " angle: " .. math.deg(angle))
+		print()
+		print()
+		asteroid.new(world, center_x, center_y, size, old_velocity_x, old_velocity_y, 10)
 	end
 end
 
